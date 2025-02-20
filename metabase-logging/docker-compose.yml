@@ -1,0 +1,99 @@
+version: '3.8'
+
+networks:
+  app-network:
+
+services:
+  postgres15:
+    image: postgres:15.4
+    ports:
+      - "5452:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Panthro1*
+      - POSTGRES_DB=fifty_db
+    command:
+      - postgres
+      - -c
+      - logging_collector=on
+      - -c
+      - log_statement=all
+      - -c
+      - log_directory=/var/log/postgresql
+      - -c
+      - log_filename=postgresql.log
+    volumes:
+      - ./postgres/logs:/var/log/postgresql
+    networks:
+      - app-network
+
+  metabase:
+    build:
+      context: ./metabase
+    platform: linux/amd64
+    ports:
+      - "5050:3000"
+    depends_on:
+      - postgres15
+    env_file:
+      - ./metabase/.env
+    environment:
+      - JAVA_OPTS=-Dlog4j.configurationFile=/app/log4j2.xml
+    volumes:
+      - ./metabase/log4j2.xml:/app/log4j2.xml
+      - ./metabase/logs:/var/log/metabase
+    networks:
+      - app-network
+
+
+
+
+  loki:
+    image: grafana/loki:2.9.4  # Upgraded Loki
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./loki/local-config.yaml:/etc/loki/local-config.yaml
+      - ./loki/data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - app-network
+
+  promtail:
+    image: grafana/promtail:2.9.4  # Upgraded Promtail
+    ports:
+      - "9080:9080"
+    volumes:
+      - ./promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - ./postgres/logs:/var/log/postgresql
+      - ./metabase/logs:/var/log/metabase
+      - /var/tmp/nginx:/var/tmp/nginx
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    networks:
+      - app-network
+
+  grafana:
+    image: grafana/grafana:11.2.0  # Confirmed version
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - app-network
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /var/tmp/nginx:/var/tmp/nginx
+    networks:
+      - app-network
+
+volumes:
+  grafana-storage:

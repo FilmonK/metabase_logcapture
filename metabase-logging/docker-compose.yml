@@ -32,24 +32,30 @@ services:
       context: ./metabase
     platform: linux/amd64
     ports:
-      - "5050:3000"
+      - "5050:3000"  # Metabase application port
+      - "9040:9040"  # JMX monitoring port
     depends_on:
       - postgres15
     env_file:
       - ./metabase/.env
     environment:
       - JAVA_OPTS=-Dlog4j.configurationFile=/app/log4j2.xml
+      - JAVA_TOOL_OPTIONS=-Xmx2000m \
+                          -Dcom.sun.management.jmxremote \
+                          -Dcom.sun.management.jmxremote.authenticate=false \
+                          -Dcom.sun.management.jmxremote.ssl=false \
+                          -Dcom.sun.management.jmxremote.port=9040 \
+                          -Dcom.sun.management.jmxremote.rmi.port=9040 \
+                          -Djava.rmi.server.hostname=0.0.0.0
     volumes:
       - ./metabase/log4j2.xml:/app/log4j2.xml
       - ./metabase/logs:/var/log/metabase
     networks:
       - app-network
 
-
-
-
+  
   loki:
-    image: grafana/loki:2.9.4  # Upgraded Loki
+    image: grafana/loki:2.9.4
     restart: unless-stopped
     ports:
       - "3100:3100"
@@ -61,7 +67,7 @@ services:
       - app-network
 
   promtail:
-    image: grafana/promtail:2.9.4  # Upgraded Promtail
+    image: grafana/promtail:2.9.4
     ports:
       - "9080:9080"
     volumes:
@@ -74,7 +80,7 @@ services:
       - app-network
 
   grafana:
-    image: grafana/grafana:11.2.0  # Confirmed version
+    image: grafana/grafana:11.2.0
     ports:
       - "3000:3000"
     environment:

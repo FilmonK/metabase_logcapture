@@ -23,7 +23,7 @@ This is simply a baseline environment and no reason other reverse proxies and SQ
 ## Screenshots
 ![Grafana Dashboard 1](https://github.com/FilmonK/metabase-capture/blob/main/readme_images/grafana1.png?raw=true)
 ![Grafana Dashboard 2](https://github.com/FilmonK/metabase-capture/blob/main/readme_images/grafana2.png?raw=true)
-![VisualVM](https://github.com/FilmonK/metabase-capture/blob/main/readme_images/visualvm.png?raw=true)
+![VisualVM](https://github.com/FilmonK/metabase-capture/blob/main/readme_images/VisualVM.png?raw=true)
 
 ## Configuration
 Once you've copied the entire folder structure locally, you may have or want to make some adjustments.

@@ -18,6 +18,7 @@ This is simply a baseline environment and no reason other reverse proxies and SQ
 - Grafana
 - Loki
 - Promtail
+- VisualVM
 
 
 ## Screenshots

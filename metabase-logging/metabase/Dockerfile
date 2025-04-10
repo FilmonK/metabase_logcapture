@@ -1,4 +1,4 @@
-FROM metabase/metabase-enterprise:v1.53.2
+FROM metabase/metabase-enterprise:v1.54.2
 
 # Copy log4j2.xml into the image
 COPY log4j2.xml /etc/metabase/log4j2.xml

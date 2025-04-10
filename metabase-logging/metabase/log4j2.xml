@@ -32,6 +32,9 @@
     <Logger name="liquibase" level="ERROR"/>
     <Logger name="net.snowflake.client.jdbc.SnowflakeConnectString" level="ERROR"/>
     <Logger name="metabase.models.params.chain-filter" level="INFO"/>
+    <Logger name="metabase.sync" level="DEBUG"/>
+    <Logger name="metabase.driver.sql-jdbc.sync" level="DEBUG"/>
+    <!-- <Logger name="metabase.driver.sql-jdbc.sync.describe-database" level="DEBUG"/> -->
 
     <Root level="WARN">
       <!-- <AppenderRef ref="STDOUT"/> -->

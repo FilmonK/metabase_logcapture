@@ -1,15 +1,23 @@
-# Log capturing configuration for a Metabase, postgres, nginx setup
-Rather than going back and forth between the the separate logs, I wanted to create an aggregator to view all of them in a single place.
-As the logs are being generated, it's using Promtail to scrape each of them.
-This is simply a baseline environment and no reason other reverse proxies and SQL engines couldn't be used in a similiar configuration.
+# Capturing Metabase Logs for Analysis and Debugging
+
+This project provides a local setup for capturing and analyzing logs from a self-hosted **Metabase** instance using **Docker**. It’s designed for Metabase developers, power users, and support engineers who want deeper visibility into Metabase behavior during development, testing, or issue reproduction.
+
+By piping Metabase logs into a dedicated volume, this environment makes it easy to:
+
+- Troubleshoot query behavior and performance
+- Capture errors or unexpected behavior during testing
+- Inspect application-level logs without relying on cloud or external infrastructure
+
+> Use this repo as a reference setup for debugging Metabase in development.
 
 
 ## Table of Contents
-* [Technologies Used](#technologies-used)
-* [Screenshots](#screenshots)
-* [Configuration](#configuration)
-* [Room for Improvement](#room-for-improvement)
-
+- [Technologies Used](#technologies-used)
+- [Architecture](#architecture)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [Exploring the Logs](#exploring-the-logs)
+- [Extending the Project](#extending-the-project)
 
 ## Technologies Used
 - Metabase
@@ -20,11 +28,40 @@ This is simply a baseline environment and no reason other reverse proxies and SQ
 - Promtail
 - VisualVM
 
+## Architecture
 
-## Screenshots
-![Grafana Dashboard 1](https://github.com/FilmonK/metabase-capture/blob/main/readme_images/grafana1.png?raw=true)
-![Grafana Dashboard 2](https://github.com/FilmonK/metabase-capture/blob/main/readme_images/grafana2.png?raw=true)
-![VisualVM](https://github.com/FilmonK/metabase-capture/blob/main/readme_images/VisualVM.png?raw=true)
+This project creates a local environment with the following components working together:
+
+- **Metabase** – A business intelligence tool used to run queries and visualize data.
+- **PostgreSQL** – The source database that Metabase queries.
+- **Promtail** – A lightweight log shipping agent that tails PostgreSQL logs.
+- **Loki** – A log aggregation system that receives logs from Promtail.
+- **Grafana** – A visualization dashboard that queries Loki to display log activity.
+
+Each query executed in Metabase is logged by PostgreSQL, captured by Promtail, and routed through Loki into Grafana — where it can be filtered, explored, and visualized in real time.
+
+This setup is ideal for validating query behavior, debugging performance issues, or showcasing query patterns as part of a product or internal demo.
+
+### Query Flow
+
+1. A user runs a query in Metabase.
+2. Metabase sends the query to the connected PostgreSQL container.
+3. PostgreSQL logs the query activity to a file.
+4. Promtail tails the log file and forwards log entries to Loki.
+5. Grafana reads logs from Loki and displays them using prebuilt or custom dashboards.
+
+### Docker Services
+
+All components run as Docker containers and are orchestrated via `docker-compose`. The key services include:
+
+| Service     | Role                              | Port(s)           |
+|-------------|------------------------------------|-------------------|
+| `metabase`  | Frontend for running queries       | `localhost:3000`  |
+| `postgres`  | SQL database with logging enabled  | `localhost:5432`  |
+| `promtail`  | Log shipping from PostgreSQL logs  | _not exposed_     |
+| `loki`      | Log aggregation backend            | `localhost:3100`  |
+| `grafana`   | Visualization dashboards           | `localhost:3001`  |
+
 
 ## Configuration
 Once you've copied the entire folder structure locally, you may have or want to make some adjustments.
@@ -57,6 +94,12 @@ Main docker-compose.yml:
 - Grafana is running on 3000
 
 
-## Room for Improvement
+## Exploring the Logs
+![Grafana Dashboard 1](https://github.com/FilmonK/metabase-capture/blob/main/readme_images/grafana1.png?raw=true)
+![Grafana Dashboard 2](https://github.com/FilmonK/metabase-capture/blob/main/readme_images/grafana2.png?raw=true)
+![VisualVM](https://github.com/FilmonK/metabase-capture/blob/main/readme_images/VisualVM.png?raw=true)
+
+
+## Extending the Project
 - SQL engine agnostic 
 

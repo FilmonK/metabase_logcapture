@@ -87,11 +87,13 @@ Nginx folder:
 - There's a "proxy_set_header X-Request-ID $request_id" to assign an unique id to each call
 
 Main docker-compose.yml:
-- All the services should be running on the same network ("app-network")
-- Postgres is running on 5452 in the container
-- Metabase is running on 5050 in the container
-- Loki is running on 9080
-- Grafana is running on 3000
+| Service     | Container Port | Host Port |
+|-------------|----------------|-----------|
+| PostgreSQL  | 5452           | 5452      |
+| Metabase    | 5050           | 5050      |
+| Loki        | 9080           | 9080      |
+| Grafana     | 3000           | 3000      |
+
 
 
 ## Exploring the Logs

@@ -64,9 +64,10 @@ All components run as Docker containers and are orchestrated via `docker-compose
 
 
 ## Configuration
-Once you've copied the entire folder structure locally, you may have or want to make some adjustments.
-Loki folder:
+Once you've copied the entire folder structure locally, you may have or want to make some adjustments.  
+Loki folder:  
 You may have to make permissions adjustments similar to the following depending on existing permissions
+```bash
   - mkdir -p ./loki/data/index
   - mkdir -p ./loki/data/cache
   - mkdir -p ./loki/data/chunks
@@ -74,19 +75,19 @@ You may have to make permissions adjustments similar to the following depending 
 
   - sudo chown -R $USER:$USER ./loki/data
   - sudo chmod -R 755 ./loki/data
-
-Metabase folder:
+```
+**Metabase folder:**
 - .env folder to specify the environment variables, including your database configuration
 - MB_DB_HOST=postgres ← this value must match the service name of the database within the main docker-compose.yml
 - Dockerfile has a command to copy the log4j2.xml file, as well as set JAVA environment variables
 - log4j2.xml file which can be adjusted to desired level of logging
 
-Nginx folder:
+**Nginx folder:**
 - There are baseline configurations for permissions handled by the Dockerfile and entrypoint.sh
 - nginx.conf file is setup to listen on port 8090 for Metabase running on port 5050
 - There's a "proxy_set_header X-Request-ID $request_id" to assign an unique id to each call
 
-Main docker-compose.yml:
+**Main docker-compose.yml:**
 | Service     | Container Port | Host Port |
 |-------------|----------------|-----------|
 | PostgreSQL  | 5452           | 5452      |
